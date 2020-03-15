@@ -4,6 +4,12 @@ import json, urllib.request, ssl, hashlib
 from eiqlib import eiqjson
 
 class EIQApi:
+    """Client for EIQ API implementing the following API methods:
+    - authenticate
+    - create entity
+    - update entity
+    - retrieve entity
+    """
     def __init__(self, host=None, username=None, password=None, source=None, use_ssl=True, insecure=False):
         self.host = host
         self.username = username
@@ -28,12 +34,12 @@ class EIQApi:
             return True
         return False
 
-    """do_call(endpt, method, headers, data, decode_json)
-    performs call to self.host + endpt
-    this call automatically assumes Content-Type and Accept headers set to application/json
-    all headers passed as argument to this call are added to that (and are able to overwrite them)
-    """
     def do_call(self, endpt, method, headers = None, data = None, decode_json = True):
+        """do_call(endpt, method, headers, data, decode_json)
+        performs call to self.host + endpt
+        this call automatically assumes Content-Type and Accept headers set to application/json
+        all headers passed as argument to this call are added to that (and are able to overwrite them)
+        """
         if not self.host:
             raise Exception('call set_host(host) before making calls')
 
@@ -71,12 +77,12 @@ class EIQApi:
                 return None
         return ret
 
+    def do_auth(self):
         """ do_auth(username, password)
             calls to /auth endpoint
       
             returns: [dict] {'token': '<token>', 'expires_at': '<timestamp>'}, or None on failed call
         """
-    def do_auth(self):
         if not self.username or not self.password:
             raise Exception('call set_credentials before do_auth')
         data = '{"username":"%s","password":"%s"}' % (self.username, self.password)
@@ -110,18 +116,18 @@ class EIQApi:
         s = hashlib.md5(s).hexdigest()
         return s[:8] + '-' + s[8:12] + '-' + s[12:16] + '-' + s[16:20] + '-' + s[20:]
 
-    """ __get_latest_version_id(self, update_identifier, token)
-            a deterministic way to figure out which random-seeming internal EIQ id
-            matches "update_identifier"
-
-            returns: ([str] uuid_prev, [str] uuid_this)
-              uuid_prev: uuid of the entity to update (or None if none exist)
-              uuid_this: uuid to use for this entity
-    """
     def get_latest_version_id(self, u, t):
         return self.__get_latest_version_id(u, t)
 
     def __get_latest_version_id(self, update_identifier, token):
+        """ __get_latest_version_id(self, update_identifier, token)
+                a deterministic way to figure out which random-seeming internal EIQ id
+                matches "update_identifier"
+
+                returns: ([str] uuid_prev, [str] uuid_this)
+                  uuid_prev: uuid of the entity to update (or None if none exist)
+                  uuid_this: uuid to use for this entity
+        """
         update_ctr = 0
         latest_version = None
 
@@ -138,6 +144,7 @@ class EIQApi:
             else:
                 return (latest_version, uuid_string)
 
+    # FIXME this is entity specific method, so it does not belong to the API client
     def get_entity_tags(self, u, t):
         return self.__get_entity_tags(u, t)
 
@@ -149,12 +156,12 @@ class EIQApi:
                 taxonomies.append(taxonomy)
         return taxonomies
 
-    """ create_entity(entity_json)
-            calls to /entities/ endpoint
-            entity_json: [str] currently formatted request body in EIQ-json for new entity
-            returns: [python object] parsed json response from api
-    """
     def create_entity(self, entity_json, update_identifier=None, token=None):
+        """ create_entity(entity_json)
+                calls to /entities/ endpoint
+                entity_json: [str] currently formatted request body in EIQ-json for new entity
+                returns: [python object] parsed json response from api
+        """
         # auth token
         if not token:
             token = self.do_auth()
@@ -182,6 +189,7 @@ class EIQApi:
             if prev_id:
                 return self.update_entity(entity_json, prev_id, entity_type, token=token)
 
+        # FIXME leak of API internals: authentication headers and token must encapsulated in the client method communicating with API
         headers = {}
         headers['Authorization'] = 'Bearer %s' % (token['token'],)
         headers['Cookie'] = 'platform-api-token=%s' % (token['token'],)
@@ -239,6 +247,7 @@ class EIQApi:
         ret = self.create_entity(update.get_as_json(), token=token)
         if not ret:
             return None
+        # FIXME return of various types depending on context: handle errors with exception
         if 'errors' in ret:
             return ret
         # on success, return the original create_entity result

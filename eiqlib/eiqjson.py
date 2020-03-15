@@ -18,8 +18,12 @@ Example usage:
   with open('EntityTitle.json', 'w') as f:
     f.write(obj.get_as_json())
 """
+
+# FIXME extract to eiq_entity module and replace with EIQEntity(marshmallow_objects.Model)
 class EIQEntity:
+    # FIXME extract to global constant
     EIQ_HALF_LIFE = 182 # EIQ default of half a year
+
     ENTITY_ACTOR = 'threat-actor'
     ENTITY_CAMPAIGN = 'campaign'
     ENTITY_COA = 'course-of-action'
@@ -29,7 +33,7 @@ class EIQEntity:
     ENTITY_SIGHTING = 'eclecticiq-sighting'
     ENTITY_TARGET = 'exploit-target'
     ENTITY_TTP = 'ttp'
-
+    # FIXME move to EntityType enum
     ENTITY_TYPES = [
       ENTITY_ACTOR,
       ENTITY_CAMPAIGN,
@@ -42,6 +46,7 @@ class EIQEntity:
       ENTITY_TTP
     ]
 
+    # FIXME extract to ActorType enum
     ACTOR_TYPE_CYBER_ESPIONAGE = "Cyber Espionage Operation's"
     ACTOR_TYPE_HACKER = 'Hacker'
     ACTOR_TYPE_HACKER_WHITE_HAT = 'Hacker - White hat'
@@ -96,7 +101,7 @@ class EIQEntity:
     OBSERVABLE_SNORT = 'snort'
     OBSERVABLE_WINREGISTRY = 'winregistry'
     OBSERVABLE_YARA = 'yara'
-
+    # FIXME extract to ObservableType enum
     OBSERVABLE_TYPES = [
         OBSERVABLE_IPV4,
         OBSERVABLE_URI,
@@ -108,7 +113,7 @@ class EIQEntity:
     OBSERVABLE_LINK_OBSERVED = 'observed'
     OBSERVABLE_LINK_TEST_MECHANISM = 'test-mechanism'
     OBSERVABLE_LINK_SIGHTED = 'sighted'
-
+    # FIXME extract to ObservableLinkType enum
     OBSERVABLE_LINK_TYPES = [
         OBSERVABLE_LINK_OBSERVED,
         OBSERVABLE_LINK_TEST_MECHANISM,
@@ -129,6 +134,7 @@ class EIQEntity:
     INDICATOR_LOGIN_NAME = 'Login Name'
     INDICATOR_IMEI_WATCHLIST = 'IMEI Watchlist'
     INDICATOR_IMSI_WATCHLIST = 'IMSI Watchlist'
+    # FIXME extract to IndicatorType enum
     INDICATOR_TYPES = [
         INDICATOR_MALICIOUS_EMAIL,
         INDICATOR_IP_WATCHLIST,
@@ -170,7 +176,7 @@ class EIQEntity:
     TTP_ICS_CONTROL = 'ICS Control'
     TTP_TRAFFIC_DIVERSION = 'Traffic Diversion'
     TTP_UNAUTHORIZED_ACCESS = 'Unauthorized Access'
-
+    # FIXME extract to TacticalTargetProgram (TTP?) enum
     TTP_TYPES = [
         TTP_ADVANTAGE,
         TTP_ADVANTAGE_ECONOMIC,
@@ -201,7 +207,7 @@ class EIQEntity:
     CLASSIFICATION_BAD = 'bad'
     CLASSIFICATION_GOOD = 'good'
     CLASSIFICATION_UNKNOWN = 'unknown'
-
+    # FIXME extract to ClassificationType enum
     CLASSIFICATION_TYPES = [
         CLASSIFICATION_BAD,
         CLASSIFICATION_GOOD,
@@ -211,7 +217,7 @@ class EIQEntity:
     CONFIDENCE_LOW = 'low'
     CONFIDENCE_MEDIUM = 'medium'
     CONFIDENCE_HIGH = 'high'
-
+    # FIXME extract to ConfidenceType enum
     CONFIDENCE_TYPES = [
         CONFIDENCE_LOW,
         CONFIDENCE_MEDIUM,
@@ -225,7 +231,7 @@ class EIQEntity:
     CATEGORY_IMPROPER_USAGE = 'Improper Usage'
     CATEGORY_SCANS = 'Scans/Probes/Attempted Access'
     CATEGORY_INVESTIGATION = 'Investigation'
-
+    # FIXME extract to CategoryType enum
     CATEGORY_TYPES = [
         CATEGORY_TEST,
         CATEGORY_UNAUTHORIZED_ACCESS,
@@ -253,7 +259,7 @@ class EIQEntity:
     DISCOVERY_SECURITY_ALARM = "Security Alarm"
     DISCOVERY_USER = "User"
     DISCOVERY_UNKNOWN = "Unknown"
-
+    # FIXME extract to DiscoveryType enum
     DISCOVERY_TYPES = [
         DISCOVERY_AGENT_DISCLOSURE,
         DISCOVERY_FRAUD_DETECTION,
@@ -595,11 +601,13 @@ class EIQEntity:
             sys.stderr.write('[!] no actor type was set using add_actor_type(actor_type)\n')
         return json.dumps(self.__doc)
 
+# FIXME extract to eiq_relation module and change to EQIRelation(marshmallow_objects.Model)
 class EIQRelation:
     RELATION_REGULAR = 'REGULAR'
     RELATION_STIX_UPDATE = 'stix_update_of'
     RELATION_INDICATOR_TTP = 'indicated_ttps'
     RELATION_ACTOR_TTP = 'observed_ttps'
+    # FIXME extract to RelationType enum
     RELATION_TYPES = [
         RELATION_REGULAR,
         RELATION_STIX_UPDATE,
@@ -607,6 +615,7 @@ class EIQRelation:
         RELATION_ACTOR_TTP
     ]
 
+    # FIXME extract to RelationLabel enum
     LABEL_ASSOCIATED_CAMPAIGN = 'Is associated campaign to'
     LABEL_INDICATES_MALWARE = 'Indicates malware'
     LABEL_UNKNOWN = 'I don\'t know'
